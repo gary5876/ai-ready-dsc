@@ -1,20 +1,16 @@
 version: '3.9'
 
 services:
-  zookeeper:
-    image: confluentinc/cp-zookeeper:7.5.0
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-
   kafka:
-    image: confluentinc/cp-kafka:7.5.0
-    depends_on: [zookeeper]
-    environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
-      KAFKA_NUM_PARTITIONS: 4
+    image: redpandadata/redpanda:latest
+    command:
+      - redpanda
+      - start
+      - --smp 1
+      - --memory 256M
+      - --overprovisioned
+      - --kafka-addr PLAINTEXT://0.0.0.0:9092
+      - --advertise-kafka-addr PLAINTEXT://kafka:9092
     ports:
       - "9092:9092"
 
@@ -30,7 +26,11 @@ services:
 
   backend:
     build: ./backend
-    depends_on: [kafka, mysql]
+    depends_on:
+      kafka:
+        condition: service_started
+      mysql:
+        condition: service_started
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/aiready
       SPRING_DATASOURCE_PASSWORD: ${MYSQL_ROOT_PASSWORD}
@@ -44,7 +44,11 @@ services:
 
   worker:
     build: ./worker
-    depends_on: [kafka, mysql]
+    depends_on:
+      kafka:
+        condition: service_started
+      mysql:
+        condition: service_started
     environment:
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       MYSQL_URL: mysql+asyncmy://root:${MYSQL_ROOT_PASSWORD}@mysql:3306/aiready
