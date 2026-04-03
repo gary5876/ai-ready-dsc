@@ -23,9 +23,12 @@ spring:
       auto-offset-reset: earliest
 
 aws:
+  access-key-id: ${AWS_ACCESS_KEY_ID:minioadmin}
+  secret-access-key: ${AWS_SECRET_ACCESS_KEY:minioadmin}
   s3:
     bucket: ${S3_BUCKET:ai-ready-platform}
-    region: ap-northeast-2
+    region: ${AWS_REGION:ap-northeast-2}
+    endpoint: ${S3_ENDPOINT_URL:}
 
 management:
   endpoints:
