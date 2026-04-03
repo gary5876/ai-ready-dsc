@@ -28,14 +28,16 @@ public class S3Config {
 
     @Bean
     public S3Client s3Client() {
-        var builder = S3Client.builder().region(Region.of(region));
+        var builder = S3Client.builder();
 
         if (!endpoint.isBlank()) {
+            builder.region(Region.US_EAST_1); // endpoint 오버라이드 시 region은 무의미
             builder.endpointOverride(URI.create(endpoint));
             builder.credentialsProvider(StaticCredentialsProvider.create(
                     AwsBasicCredentials.create(accessKeyId, secretAccessKey)));
             builder.forcePathStyle(true);
         } else {
+            builder.region(Region.of(region));
             builder.credentialsProvider(DefaultCredentialsProvider.create());
         }
 
