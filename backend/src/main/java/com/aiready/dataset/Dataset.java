@@ -22,7 +22,7 @@ public class Dataset {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false, length = 512)
+    @Column(name = "s3_key", nullable = false, length = 512)
     private String s3Key;
 
     private Integer rowCount;
