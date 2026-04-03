@@ -28,6 +28,7 @@ public class EvalJob {
 
     private int progress = 0;
     private String errorMsg;
+    @Column(name = "result_s3_key")
     private String resultS3Key;
 
     private LocalDateTime createdAt = LocalDateTime.now();
